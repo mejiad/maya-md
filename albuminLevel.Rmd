@@ -1,0 +1,61 @@
+---
+title: "Albumin Level"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+```
+
+# Albumin Level 
+
+Albumin level and Vitamin D and B12 deficiency
+All low values re relevant to show vitamin deficiencies
+Looking at Age, Gender and BMI
+
+# Reading original data
+
+```{r data, include=TRUE}
+data <- read_excel("MayaMD_1587.xlsx")
+```
+
+### Convert to data frame
+```{r convert_to_dataframe, echo=FALSE}
+df <- data.frame(data)
+```
+
+
+## Convert values to numeric all the required attributes
+```{r}
+df_mod <- transform(df, Total.Protein...Serum = as.numeric(Total.Protein...Serum));
+df_mod <- transform(df_mod, Total.Bilirubin...Serum = as.numeric(Total.Bilirubin...Serum))
+df_mod <- transform(df_mod, Direct.Bilirubin...Serum = as.numeric(Direct.Bilirubin...Serum))
+df_mod <- transform(df_mod, Indirect.Bilirubin...Serum = as.numeric(Indirect.Bilirubin...Serum));
+df_mod <- transform(df_mod, Albumin...Serum = as.numeric(Albumin...Serum));
+df_mod <- transform(df_mod, Alkaline.Phosphatase...Serum = as.numeric(Alkaline.Phosphatase...Serum));
+df_mod <- transform(df_mod, Alanine.Transaminase..SGPT.ALT....Serum = as.numeric(Alanine.Transaminase..SGPT.ALT....Serum))
+df_mod <- transform(df_mod, Aspartate.Transaminase..SGOT.AST....Serum = as.numeric(Aspartate.Transaminase..SGOT.AST....Serum));
+df_mod <- transform(df_mod, SGOT...SGPT.Ratio = as.numeric(SGOT...SGPT.Ratio));
+df_mod <- transform(df_mod, Globulin...Serum = as.numeric(Globulin...Serum));
+
+```
+
+
+## Ranges
+Albumin Serum < 3.5 g/dl low 
+P. Diagnostic: Hypoalbuminemia
+
+```{r}
+
+
+```
+
+
+
+

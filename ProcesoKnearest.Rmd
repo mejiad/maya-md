@@ -1,0 +1,51 @@
+---
+title: "ProcesoKnearest"
+author: "Daniel Mejia"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+    # data <- read_excel("MayaMD_1587.xlsx")
+    # df <- data.frame(data)
+    
+    # df$Age.Group <-  as.integer( ( as.integer( format( Sys.Date(), "%Y") ) - as.integer(format(as.Date(df$Date.of.birth), "%Y")) ) / 10) * 10
+    
+    # df$BMI.Group <-  as.integer(as.integer(df$BMI) / 10) * 10
+    
+    # df_mod <- df
+    # df_mod$Total.Protein...Serum <- as.numeric(df_mod$Total.Protein...Serum)
+    # df_mod$Total.Bilirubin...Serum <- as.numeric(df_mod$Total.Bilirubin...Serum)
+    
+    # df_mod$Direct.Bilirubin...Serum <- as.numeric(df_mod$Direct.Bilirubin...Serum);
+    # df_mod$Indirect.Bilirubin...Serum <- as.numeric(df_mod$Indirect.Bilirubin...Serum);
+    # df_mod$Albumin...Serum <- as.numeric(df_mod$Albumin...Serum);
+    # df_mod$Alkaline.Phosphatase...Serum <- as.numeric(df_mod$Alkaline.Phosphatase...Serum);
+    # df_mod$Alanine.Transaminase..SGPT.ALT....Serum <- as.numeric(df_mod$Alanine.Transaminase..SGPT.ALT....Serum);
+    # df_mod$Aspartate.Transaminase..SGOT.AST....Serum <- as.numeric(df_mod$Aspartate.Transaminase..SGOT.AST....Serum);
+    # df_mod$SGOT...SGPT.Ratio <- as.numeric(df_mod$SGOT...SGPT.Ratio);
+    # df_mod$Globulin...Serum <- as.numeric(df_mod$Globulin...Serum);
+    # df_mod$Vit.D.assay <- as.numeric(df_mod$Vit.D.assay)
+    # df_mod$Vitamin.B12..Serum <- as.numeric(df_mod$Vitamin.B12..Serum)
+    
+    # CENTERS = 3
+    # albumin_kmean <- df_mod %>% filter(!is.na(Albumin...Serum) & !is.na(Vit.D.assay) & !is.na(Vitamin.B12..Serum)) %>% select(Albumin...Serum, Vit.D.assay, Vitamin.B12..Serum)
+    
+    # Fitting K-Means clustering Model to training dataset
+    
+    # set.seed(240) # Setting seed
+    # kmeans.re <- kmeans(albumin_kmean, centers = CENTERS, nstart = 10)
+    # kmeans.re
+    
+    # header_str <- paste("MK-means ", CENTERS, " cluster", sep=" ")
+    # plot(albumin_kmean[c("Albumin...Serum", "Vit.D.assay")],
+         # col = kmeans.re$cluster)
+    
+    # plot(albumin_kmean[c("Albumin...Serum", "Vit.D.assay")],
+         # col = kmeans.re$cluster,
+         # main = header_str )
+    
+    # kmeans.re$centers
+    # kmeans.re$centers[, c("Albumin...Serum", "Vit.D.assay")]

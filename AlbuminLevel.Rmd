@@ -1,0 +1,244 @@
+---
+title: "AlbuminLevel"
+author: "Daniel Mejia"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+```
+
+# Albumin Level 
+
+Analysis of  Albumin level and Vitamin D and B12 deficiency.
+Looking at Age, Gender and BMI
+
+The objective is to analyze how the Albumin and Vitamin D and Vitamin B12 are related.
+
+## Reading original data
+
+For this document we are going to use the file with 1587 rows.
+
+```{r data, include=TRUE, echo=TRUE}
+data <- read_excel("MayaMD_1587.xlsx")
+```
+
+### Convert to data frame
+
+After reading the excel document we need to convert to data frame.
+```{r convert_to_dataframe, echo=TRUE}
+df <- data.frame(data)
+```
+
+### Add age group
+
+We need an attribute with the age group for every row. This attribute is added to the data frame.
+
+```{r add_features02, echo=TRUE}
+df$Age.Group <-  as.integer( ( as.integer( format( Sys.Date(), "%Y") ) - as.integer(format(as.Date(df$Date.of.birth), "%Y")) ) / 10) * 10
+```
+
+### Add BMI group
+
+For the MBI plots we need to group the BMi values 
+
+```{r add_features03, echo=TRUE}
+df$BMI.Group <-  as.integer(as.integer(df$BMI) / 10) * 10
+```
+
+
+### Convert values to numeric all the required attributes
+
+All the values come in string format, we need to convert to numeric values.
+
+```{r, echo=FALSE}
+df_mod <- df
+df_mod$Total.Protein...Serum <- as.numeric(df_mod$Total.Protein...Serum)
+df_mod$Total.Bilirubin...Serum <- as.numeric(df_mod$Total.Bilirubin...Serum)
+
+df_mod$Direct.Bilirubin...Serum <- as.numeric(df_mod$Direct.Bilirubin...Serum);
+df_mod$Indirect.Bilirubin...Serum <- as.numeric(df_mod$Indirect.Bilirubin...Serum);
+df_mod$Albumin...Serum <- as.numeric(df_mod$Albumin...Serum);
+df_mod$Alkaline.Phosphatase...Serum <- as.numeric(df_mod$Alkaline.Phosphatase...Serum);
+df_mod$Alanine.Transaminase..SGPT.ALT....Serum <- as.numeric(df_mod$Alanine.Transaminase..SGPT.ALT....Serum);
+df_mod$Aspartate.Transaminase..SGOT.AST....Serum <- as.numeric(df_mod$Aspartate.Transaminase..SGOT.AST....Serum);
+df_mod$SGOT...SGPT.Ratio <- as.numeric(df_mod$SGOT...SGPT.Ratio);
+df_mod$Globulin...Serum <- as.numeric(df_mod$Globulin...Serum);
+df_mod$Vit.D.assay <- as.numeric(df_mod$Vit.D.assay)
+df_mod$Vitamin.B12..Serum <- as.numeric(df_mod$Vitamin.B12..Serum)
+```
+
+## Ranges
+Albumin Serum < 3.5 g/dl low 
+P. Diagnostic: Hypoalbuminemia
+
+```{r, echo=TRUE}
+  
+albumin_df <- df_mod %>% filter(!is.na(Albumin...Serum) & !is.na(Vit.D.assay)  )
+```
+
+# Albumin Vit.D Plots
+
+## Albumin By Age Group
+```{r, echo=TRUE}
+albumin_df %>% ggplot(aes(x=Age.Group, y=Albumin...Serum)) + geom_point(aes(colour=factor(Gender))   )
+```
+
+\newpage
+
+## BMI - Albumin Plot
+
+```{r, echo=TRUE}
+albumin_df %>% ggplot(aes(x=BMI, y=Albumin...Serum)) + geom_point(aes(colour=factor(Age.Group))   )+ theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) + theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) + geom_hline(yintercept = 3.5, linetype = 'dotted', col = 'red')
+```
+\newpage
+
+## Ablumin - Vit.D Plot
+
+```{r, echo=TRUE}
+albumin_df %>% ggplot(aes(x=Albumin...Serum, y = Vit.D.assay)) + geom_point(aes(colour=factor(Age.Group))) + theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) + geom_hline(yintercept = 3.5, linetype = 'dotted', col = 'red')
+```
+
+
+\newpage
+# Detail data of people with Albumin < 3.5
+
+```{r, echo=TRUE}
+albumin_df %>% filter(Albumin...Serum < 3.5  ) %>% select(Albumin...Serum, Vit.D.assay, Gender, Village, Age.Group) %>% arrange(Gender)
+```
+
+\newpage
+# Detail data of people with Vit.D < 3
+
+```{r, echo=TRUE}
+df_mod %>% filter(Vit.D.assay < 3.0 ) %>% select(Albumin...Serum, Vit.D.assay, Gender, Village, Age.Group, Family.Id)
+```
+
+\newpage
+# Albumina B12
+
+Data frame with rows with Albumin and Vitamin.B12 values different to NA
+
+```{r, echo=TRUE}
+b12_df <- df_mod %>% filter(!is.na(Albumin...Serum) & !is.na(Vitamin.B12..Serum))
+```
+
+\newpage
+## Vitamin.B12 - Age Group Plot
+
+```{r, echo=TRUE}
+b12_df %>% ggplot(aes(x=Age.Group, y=Vitamin.B12..Serum)) + geom_point(aes(colour=factor(Gender))   )
+
+```
+
+\newpage
+## Vitamin B12 - BMI Plot
+```{r, echo=TRUE}
+b12_df %>% ggplot(aes(x=BMI, y=Vitamin.B12..Serum)) + geom_point(aes(colour=factor(Age.Group))   )+ theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) + theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) + geom_hline(yintercept = 50, linetype = 'dotted', col = 'red')
+```
+
+\newpage
+## Albumin - Vitamin B12 group by Age scatter plot
+
+```{r, echo=TRUE}
+b12_df %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(colour=factor(Age.Group))) + 
+ theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) +
+ geom_hline(yintercept = 50, linetype = 'dotted', col = 'red')  + annotate("text", x = 0, y = 50, label = "50", vjust=-0.5) +
+ geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotation_custom(grid::textGrob("3.5", rot = 90), xmin = 0.0, ymin = 0)
+```
+
+\newpage
+## Detail data of people with Vitamin.B12 < 50
+
+```{r, echo=TRUE}
+b12_df %>% filter(Vitamin.B12..Serum < 50.0  ) %>% select(Albumin...Serum, Vit.D.assay, Gender, Village, Age.Group, Family.Id)
+```
+
+
+\newpage
+# Detail data of people with Vitamin B12 < 50 and Albumin < 3.5
+
+```{r, echo=TRUE}
+b12_df %>% filter(Vitamin.B12..Serum< 5.0 & Albumin...Serum < 3.5  ) %>% select(Albumin...Serum, Vit.D.assay, Vitamin.B12..Serum,  Gender, Village, Age.Group, Family.Id)
+```
+
+\newpage
+## Albumin - Vitamin.B12 and BMI group plot
+```{r, echo=TRUE}
+b12_df %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(colour=factor(BMI.Group))) + theme(panel.grid = element_line(color =  '#8ccde3', size = 0.3, linetype = 2)) +
+ geom_hline(yintercept = 50, linetype = 'dotted', col = 'red')  + annotate("text", x = 0, y = 50, label = "50", vjust=-0.5) +
+ geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotation_custom(grid::textGrob("3.5", rot = 90), xmin = 0.0, ymin = 0)
+```
+
+
+
+\newpage
+# Cluster Analysis
+
+## Ploting cluster centers
+
+Number of centers
+```{r, echo=FALSE}
+CENTERS = 3
+```
+
+
+Selecting data for the cluster
+```{r}
+albumin_kmean <- df_mod %>% filter(!is.na(Albumin...Serum) & !is.na(Vit.D.assay) & !is.na(Vitamin.B12..Serum)) %>% select(Albumin...Serum, Vit.D.assay, Vitamin.B12..Serum)
+```
+
+# Fitting K-Means clustering Model to training dataset
+
+```{r}
+set.seed(240) # Setting seed
+kmeans.re <- kmeans(albumin_kmean, centers = CENTERS, nstart = 10)
+kmeans.re
+```
+
+```{r, echo=FALSE}
+header_str <- paste("MK-means ", CENTERS, " cluster", sep=" ")
+plot(albumin_kmean[c("Albumin...Serum", "Vit.D.assay")],
+     col = kmeans.re$cluster)
+
+plot(albumin_kmean[c("Albumin...Serum", "Vit.D.assay")],
+     col = kmeans.re$cluster,
+     main = header_str )
+
+kmeans.re$centers
+kmeans.re$centers[, c("Albumin...Serum", "Vit.D.assay")]
+
+points(kmeans.re$centers[, c("Albumin...Serum", "Vit.D.assay")],
+       col = 1:4, pch = 8, cex = 5) 
+``` 
+
+
+
+```{r, echo=FALSE}
+plot(albumin_kmean[c("Albumin...Serum", "Vitamin.B12..Serum")],
+     col = kmeans.re$cluster)
+
+plot(albumin_kmean[c("Albumin...Serum", "Vitamin.B12..Serum")],
+     col = kmeans.re$cluster,
+     main = header_str )
+
+kmeans.re$centers
+kmeans.re$centers[, c("Albumin...Serum", "Vitamin.B12..Serum")]
+
+points(kmeans.re$centers[, c("Albumin...Serum", "Vitamin.B12..Serum")],
+       col = 1:4, pch = 8, cex = 5) 
+```
+
+
+\newpage
+# 3D scatter plot
+
+```{r, echo=FALSE}
+scatterplot3d::scatterplot3d(x=albumin_kmean$Albumin...Serum, y=albumin_kmean$Vit.D.assay, z=albumin_kmean$Vitamin.B12..Serum, color= kmeans.re$cluster, angle=120, xlab="Albumin", ylab="Vit.D", zlab="Vitamin.B12")
+```

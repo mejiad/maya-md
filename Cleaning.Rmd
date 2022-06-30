@@ -1,0 +1,538 @@
+
+---
+title: "MayaMD-Cleaning"
+author: "Daniel Mejia"
+date: '2022-06-25'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+```
+
+## MayaMD Analysis
+
+This is document shows the analysis of the SVM PPHM_Citizens tested data file_1199 ORDERS_17May2022(1).xlsx
+
+```{r data, include=TRUE}
+data <- read_excel("MayaMD_1587.xlsx")
+```
+
+The document contains 1199 rows and 65 columns
+All the data comes in character format. Based on the data from each attribute we consider the following data types:
+
+### Categorical data
+                   
+- Gender
+- Village
+- Block
+- District                                  
+- Member.Id
+- Family.Id                                 
+- How.did.you.know.about.PPHM.
+- Basophils
+- Blood.Group
+
+### Date data
+- Test.Result.Arrived.On
+- Date.of.birth
+- Registered.On
+
+
+### Numeric data
+- BMI
+- Weight
+- Height
+- Creatinine...Serum
+- Eosinophils
+- Hemoglobin
+- Lymphocytes
+- M.C.H.
+- M.C.H.C
+- M.C.V.
+- Monocytes
+- Neutrophils
+- P.C.V.
+- Platelet.count
+- R.D.W..CV
+- Random.Blood.Sugar
+- T3..Tri.iodothyronine.
+- T4..Thyroxine.
+- TSH
+- Total.RBC.Count
+- Total.WBC.Count
+- Vit.D.assay
+- Vitamin.B12..Serum
+- Folic.Acid.assay
+- Uric.Acid...Serum
+- A.G.Ratio
+- Alanine.Transaminase..SGPT.ALT....Serum
+- Albumin...Serum
+- Alkaline.Phosphatase...Serum
+- Aspartate.Transaminase..SGOT.AST....Serum
+- Direct.Bilirubin...Serum
+- Globulin...Serum
+- HbA1c
+- Indirect.Bilirubin...Serum
+- Potassium
+- SGOT...SGPT.Ratio
+- Total.Bilirubin...Serum
+- Total.Protein...Serum
+- Triglyceride...Serum
+- Vitamin.A.Retinol
+- Total.Cholesterol...Serum
+- Cholesterol...Serum
+- HDL.Cholesterol...Serum
+- LDL...HDL.Cholesterol.Ratio
+- LDL.Cholesterol...Serum
+- Total.Cholesterol...HDL.Cholesterol.Ratio
+- VLDL.Cholesterol...Serum
+- Prostate.Specific.Antigen..PSA.
+- Blood.Urea
+- Blood.Urea.Nitrogen
+- Sodium
+- Direct.Bilirubin
+
+
+### Data Dimensions
+
+```{r dimensions}
+dim(data)
+```
+
+```{r head}
+head(data)
+```
+
+### Convert to data frame
+```{r convert_to_dataframe, echo=FALSE}
+df <- data.frame(data)
+```
+
+### Convert numeric columns to numeric type
+```{r convert1, echo=FALSE}
+df_mod <- transform(df, Creatinine...Serum = as.numeric(Creatinine...Serum));
+df_mod <- transform(df_mod, Eosinophils = as.numeric(Eosinophils));
+df_mod <- transform(df_mod, Hemoglobin = as.numeric(Hemoglobin));
+
+df_mod <- transform(df_mod, Lymphocytes = as.numeric(Lymphocytes));
+df_mod <- transform(df_mod, M.C.H. = as.numeric(M.C.H.));
+df_mod <- transform(df_mod, M.C.H.C = as.numeric(M.C.H.C));
+df_mod <- transform(df_mod, M.C.V. = as.numeric(M.C.V.));
+df_mod <- transform(df_mod,  Monocytes= as.numeric(Monocytes));
+df_mod <- transform(df_mod, Neutrophils = as.numeric(Neutrophils));
+df_mod <- transform(df_mod, P.C.V. = as.numeric(P.C.V.));
+df_mod <- transform(df_mod, Platelet.count = as.numeric(Platelet.count));
+df_mod <- transform(df_mod, R.D.W..CV = as.numeric(R.D.W..CV));
+df_mod <- transform(df_mod,  Random.Blood.Sugar= as.numeric(Random.Blood.Sugar));
+
+df_mod <- transform(df_mod,  T3..Tri.iodothyronine.= as.numeric(T3..Tri.iodothyronine.));
+df_mod <- transform(df_mod,  T4..Thyroxine. = as.numeric(T4..Thyroxine.));
+
+df_mod <- transform(df_mod, TSH = as.numeric(TSH));
+df_mod <- transform(df_mod, Total.RBC.Count = as.numeric(Total.RBC.Count));
+df_mod <- transform(df_mod, Total.WBC.Count = as.numeric(Total.WBC.Count));
+df_mod <- transform(df_mod, Vit.D.assay = as.numeric(Vit.D.assay));
+df_mod <- transform(df_mod, Vitamin.B12..Serum = as.numeric(Vitamin.B12..Serum));
+df_mod <- transform(df_mod, Folic.Acid.assay = as.numeric(Folic.Acid.assay));
+df_mod <- transform(df_mod, Uric.Acid...Serum = as.numeric(Uric.Acid...Serum));
+df_mod <- transform(df_mod, A.G.Ratio = as.numeric(A.G.Ratio));
+df_mod <- transform(df_mod, Alanine.Transaminase..SGPT.ALT....Serum = as.numeric(Alanine.Transaminase..SGPT.ALT....Serum));
+df_mod <- transform(df_mod, Albumin...Serum = as.numeric(Albumin...Serum));
+df_mod <- transform(df_mod, Alkaline.Phosphatase...Serum = as.numeric(Alkaline.Phosphatase...Serum));
+df_mod <- transform(df_mod, Aspartate.Transaminase..SGOT.AST....Serum = as.numeric(Aspartate.Transaminase..SGOT.AST....Serum));
+df_mod <- transform(df_mod, Direct.Bilirubin...Serum = as.numeric(Direct.Bilirubin...Serum));
+df_mod <- transform(df_mod, Globulin...Serum = as.numeric(Globulin...Serum));
+df_mod <- transform(df_mod, HbA1c = as.numeric(HbA1c));
+df_mod <- transform(df_mod, Indirect.Bilirubin...Serum = as.numeric(Indirect.Bilirubin...Serum));
+df_mod <- transform(df_mod, Potassium = as.numeric(Potassium));
+df_mod <- transform(df_mod, SGOT...SGPT.Ratio = as.numeric(SGOT...SGPT.Ratio));
+df_mod <- transform(df_mod, Total.Bilirubin...Serum = as.numeric(Total.Bilirubin...Serum));
+df_mod <- transform(df_mod, Total.Protein...Serum = as.numeric(Total.Protein...Serum));
+df_mod <- transform(df_mod, Triglyceride...Serum = as.numeric(Triglyceride...Serum));
+df_mod <- transform(df_mod, Vitamin.A.Retinol = as.numeric(Vitamin.A.Retinol));
+df_mod <- transform(df_mod, Total.Cholesterol...Serum = as.numeric(Total.Cholesterol...Serum));
+df_mod <- transform(df_mod, Cholesterol...Serum = as.numeric(Cholesterol...Serum));
+df_mod <- transform(df_mod, HDL.Cholesterol...Serum = as.numeric(HDL.Cholesterol...Serum));
+df_mod <- transform(df_mod, LDL...HDL.Cholesterol.Ratio = as.numeric(LDL...HDL.Cholesterol.Ratio));
+df_mod <- transform(df_mod, LDL.Cholesterol...Serum = as.numeric(LDL.Cholesterol...Serum));
+df_mod <- transform(df_mod, Total.Cholesterol...HDL.Cholesterol.Ratio = as.numeric(Total.Cholesterol...HDL.Cholesterol.Ratio));
+df_mod <- transform(df_mod, VLDL.Cholesterol...Serum = as.numeric(VLDL.Cholesterol...Serum));
+df_mod <- transform(df_mod, Prostate.Specific.Antigen..PSA. = as.numeric(Prostate.Specific.Antigen..PSA.));
+df_mod <- transform(df_mod, Blood.Urea = as.numeric(Blood.Urea));
+df_mod <- transform(df_mod, Blood.Urea.Nitrogen = as.numeric(Blood.Urea.Nitrogen));
+df_mod <- transform(df_mod, Sodium = as.numeric(Sodium));
+df_mod <- transform(df_mod, Direct.Bilirubin = as.numeric(Direct.Bilirubin));
+df_mod <- transform(df_mod, Total.Bilirubin = as.numeric(Total.Bilirubin));
+```
+
+```{r summary}
+summary(df_mod)
+```
+## Data distribution
+
+### BMI Histogram
+
+```{r bmi, echo=FALSE}
+df_mod %>% filter(!is.na(BMI)) %>% ggplot(aes(x=BMI)) + geom_histogram(alpha=0.5) 
+
+```
+
+### Weight Histogram
+
+```{r hist_weight, echo=FALSE}
+df_mod %>% filter(!is.na(Weight)) %>% ggplot( aes(x=Weight)) + geom_histogram(alpha=0.5, bins=10) 
+```
+
+### Heigth Histogram
+
+```{r hist_height, echo=FALSE}
+df_mod %>% filter(!is.na(Height)) %>% ggplot( aes(x=Height)) + geom_histogram(bins=10, alpha=0.5) 
+```
+
+### Creatinine...Serum
+
+```{r histCreatinineSerum, echo=FALSE}
+df_mod %>% filter(!is.na(Creatinine...Serum)) %>% ggplot(aes(x=Creatinine...Serum)) + geom_histogram(alpha=0.5, bins=10)
+
+```
+
+### Eosinophils
+
+```{r hist_Eosinophilis, echo=FALSE}
+df_mod %>%filter(!is.na(Eosinophils)) %>%  ggplot(aes(x=Eosinophils)) + geom_histogram(bins=10, alpha=0.5) 
+```
+
+### Hemoglobin
+
+```{r hist_hemoglobin, echo=FALSE}
+df_mod %>% filter(!is.na(Hemoglobin)) %>% ggplot(aes(x=Hemoglobin)) + geom_histogram(bins=10, alpha=0.5) 
+```
+
+## Creatinine...Serum
+```{r Creatinine...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Creatinine...Serum)) %>% ggplot( aes(x=Creatinine...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Eosinophils
+```{r Eosinophils, echo=FALSE}
+df_mod %>% filter(!is.na(Eosinophils)) %>% ggplot(aes(x=Eosinophils)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Hemoglobin
+```{r Hemoglobin, echo=FALSE}
+df_mod %>% filter(!is.na(Hemoglobin)) %>% ggplot( aes(x=Hemoglobin)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Lymphocytes
+```{r Lymphocytes, echo=FALSE}
+df_mod %>% filter(!is.na(Lymphocytes)) %>% ggplot( aes(x=Lymphocytes)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## M.C.H.
+```{r M.C.H., echo=FALSE}
+df_mod %>% filter(!is.na(M.C.H.)) %>% ggplot(aes(x=M.C.H.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## M.C.H.C
+```{r M.C.H.C, echo=FALSE}
+df_mod %>% filter(!is.na(M.C.H.C)) %>% ggplot( aes(x=M.C.H.C)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## M.C.V.
+```{r M.C.V., echo=FALSE}
+df_mod %>% filter(!is.na(M.C.V.)) %>% ggplot( aes(x=M.C.V.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Monocytes
+```{r Monocytes, echo=FALSE}
+df_mod %>% filter(!is.na(Monocytes)) %>% ggplot(aes(x=Monocytes)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Neutrophils
+```{r Neutrophils, echo=FALSE}
+df_mod %>% filter(!is.na(Neutrophils)) %>% ggplot( aes(x=Neutrophils)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## P.C.V.
+```{r P.C.V., echo=FALSE}
+df_mod %>% filter(!is.na(P.C.V.)) %>% ggplot(aes(x=P.C.V.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Platelet.count
+```{r Platelet.count, echo=FALSE}
+df_mod %>% filter(!is.na(Platelet.count)) %>% ggplot(aes(x=Platelet.count)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## R.D.W..CV
+```{r R.D.W..CV, echo=FALSE}
+df_mod %>% filter(!is.na(R.D.W..CV)) %>% ggplot(aes(x=R.D.W..CV)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Random.Blood.Sugar
+```{r Random.Blood.Sugar, echo=FALSE}
+df_mod %>% filter(!is.na(Random.Blood.Sugar)) %>% ggplot(aes(x=Random.Blood.Sugar)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## T3..Tri.iodothyronine.
+```{r T3..Tri.iodothyronine., echo=FALSE}
+df_mod %>% filter(!is.na(T3..Tri.iodothyronine.)) %>% ggplot(aes(x=T3..Tri.iodothyronine.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## T4..Thyroxine.
+```{r T4..Thyroxine., echo=FALSE}
+df_mod %>% filter(!is.na(T4..Thyroxine.)) %>% ggplot(aes(x=T4..Thyroxine.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## TSH
+```{r TSH, echo=FALSE}
+df_mod %>% filter(!is.na(TSH)) %>% ggplot( aes(x=TSH)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.RBC.Count
+```{r Total.RBC.Count, echo=FALSE}
+df_mod %>% filter(!is.na(Total.RBC.Count)) %>% ggplot( aes(x=Total.RBC.Count)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.WBC.Count
+```{r Total.WBC.Count, echo=FALSE}
+df_mod %>% filter(!is.na(Total.WBC.Count)) %>% ggplot( aes(x=Total.WBC.Count)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Vit.D.assay
+```{r Vit.D.assay, echo=FALSE}
+df_mod %>% filter(!is.na(Vit.D.assay)) %>% ggplot( aes(x=Vit.D.assay)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Vitamin.B12..Serum
+```{r Vitamin.B12..Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Vitamin.B12..Serum)) %>% ggplot(aes(x=Vitamin.B12..Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Folic.Acid.assay
+```{r Folic.Acid.assay, echo=FALSE}
+df_mod %>% filter(!is.na(Folic.Acid.assay)) %>% ggplot( aes(x=Folic.Acid.assay)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Uric.Acid...Serum
+```{r Uric.Acid...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Uric.Acid...Serum)) %>% ggplot( aes(x=Uric.Acid...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## A.G.Ratio
+```{r A.G.Ratio, echo=FALSE}
+df_mod %>% filter(!is.na(A.G.Ratio)) %>% ggplot( aes(x=A.G.Ratio)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Alanine.Transaminase..SGPT.ALT....Serum
+```{r Alanine.Transaminase..SGPT.ALT....Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Alanine.Transaminase..SGPT.ALT....Serum)) %>% ggplot(aes(x=Alanine.Transaminase..SGPT.ALT....Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Albumin...Serum
+```{r Albumin...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Albumin...Serum)) %>% ggplot(aes(x=Albumin...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Alkaline.Phosphatase...Serum
+```{r Alkaline.Phosphatase...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Alkaline.Phosphatase...Serum)) %>% ggplot(aes(x=Alkaline.Phosphatase...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Aspartate.Transaminase..SGOT.AST....Serum
+```{r Aspartate.Transaminase..SGOT.AST....Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Aspartate.Transaminase..SGOT.AST....Serum)) %>% ggplot(aes(x=Aspartate.Transaminase..SGOT.AST....Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Direct.Bilirubin...Serum
+```{r Direct.Bilirubin...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Direct.Bilirubin...Serum)) %>% ggplot(aes(x=Direct.Bilirubin...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Globulin...Serum
+```{r Globulin...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Globulin...Serum)) %>% ggplot(aes(x=Globulin...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## HbA1c
+```{r HbA1c, echo=FALSE}
+df_mod %>% filter(!is.na(HbA1c)) %>% ggplot( aes(x=HbA1c)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Indirect.Bilirubin...Serum
+```{r Indirect.Bilirubin...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Indirect.Bilirubin...Serum)) %>% ggplot(aes(x=Indirect.Bilirubin...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Potassium
+```{r Potassium, echo=FALSE}
+df_mod %>% filter(!is.na(Potassium)) %>% ggplot(aes(x=Potassium)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## SGOT...SGPT.Ratio
+```{r SGOT...SGPT.Ratio, echo=FALSE}
+df_mod %>% filter(!is.na(SGOT...SGPT.Ratio)) %>% ggplot( aes(x=SGOT...SGPT.Ratio)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.Bilirubin...Serum
+```{r Total.Bilirubin...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Total.Bilirubin...Serum)) %>% ggplot( aes(x=Total.Bilirubin...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.Protein...Serum
+```{r Total.Protein...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Total.Protein...Serum)) %>% ggplot(aes(x=Total.Protein...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Triglyceride...Serum
+```{r Triglyceride...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Triglyceride...Serum)) %>% ggplot( aes(x=Triglyceride...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Vitamin.A.Retinol
+```{r Vitamin.A.Retinol, echo=FALSE}
+df_mod %>% filter(!is.na(Vitamin.A.Retinol)) %>% ggplot(aes(x=Vitamin.A.Retinol)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.Cholesterol...Serum
+```{r Total.Cholesterol...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Total.Cholesterol...Serum)) %>% ggplot(aes(x=Total.Cholesterol...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Cholesterol...Serum
+```{r Cholesterol...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(Cholesterol...Serum)) %>% ggplot(aes(x=Cholesterol...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## HDL.Cholesterol...Serum
+```{r HDL.Cholesterol...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(HDL.Cholesterol...Serum)) %>% ggplot(aes(x=HDL.Cholesterol...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## LDL...HDL.Cholesterol.Ratio
+```{r LDL...HDL.Cholesterol.Ratio, echo=FALSE}
+df_mod %>% filter(!is.na(LDL...HDL.Cholesterol.Ratio)) %>% ggplot(aes(x=LDL...HDL.Cholesterol.Ratio)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## LDL.Cholesterol...Serum
+```{r LDL.Cholesterol...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(LDL.Cholesterol...Serum)) %>% ggplot( aes(x=LDL.Cholesterol...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Total.Cholesterol...HDL.Cholesterol.Ratio
+```{r Total.Cholesterol...HDL.Cholesterol.Ratio, echo=FALSE}
+df_mod %>% filter(!is.na(Total.Cholesterol...HDL.Cholesterol.Ratio)) %>% ggplot(aes(x=Total.Cholesterol...HDL.Cholesterol.Ratio)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## VLDL.Cholesterol...Serum
+```{r VLDL.Cholesterol...Serum, echo=FALSE}
+df_mod %>% filter(!is.na(VLDL.Cholesterol...Serum)) %>% ggplot(aes(x=VLDL.Cholesterol...Serum)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Prostate.Specific.Antigen..PSA.
+```{r Prostate.Specific.Antigen..PSA., echo=FALSE}
+df_mod %>% filter(!is.na(Prostate.Specific.Antigen..PSA.)) %>% ggplot( aes(x=Prostate.Specific.Antigen..PSA.)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Blood.Urea
+```{r Blood.Urea, echo=FALSE}
+df_mod %>% filter(!is.na(Blood.Urea)) %>% ggplot(aes(x=Blood.Urea)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Blood.Urea.Nitrogen
+```{r Blood.Urea.Nitrogen, echo=FALSE}
+df_mod %>% filter(!is.na(Blood.Urea.Nitrogen)) %>% ggplot(aes(x=Blood.Urea.Nitrogen)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Sodium
+```{r Sodium, echo=FALSE}
+df_mod %>% filter(!is.na(Sodium)) %>% ggplot(aes(x=Sodium)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+## Direct.Bilirubin
+```{r Direct.Bilirubin, echo=FALSE}
+df_mod %>% filter(!is.na(Direct.Bilirubin)) %>% ggplot(aes(x=Direct.Bilirubin)) + geom_histogram(bins=10, alpha=0.5)
+```
+
+
+# Null analysis
+
+Most of the data has NULL values. In the following table is shown the percent of null values by attribute
+
+```{r nullAnalysis}
+nulos <- sapply(df_mod, is.na)
+sumaNulos <- colSums(nulos[,-1])
+sumaNulosDF <- data.frame(sumaNulos)
+sumaNulosDF
+``` 
+
+```{r nullspct}
+numrows <- nrow(df_mod)
+pctNulos <- (sumaNulos / numrows) * 100.0
+pctNulosDF <- data.frame(pctNulos)
+pctNulosDF
+```
+
+
+# Categorical features
+
+- Gender
+- Village
+- Block
+- District                                  
+- How.did.you.know.about.PPHM.
+- Basophils
+- Blood.Group
+
+## Gender
+```{r catGender}
+df_mod %>% select(Gender) %>% group_by(Gender) %>% summarise(n = n())
+```
+
+## Village
+```{r catVillage}
+df_mod %>% select(Village) %>% group_by(Village) %>% summarise(n = n())
+```
+
+## Block
+```{r catBlock}
+df_mod %>% select(Block) %>% group_by(Block) %>% summarise(n = n())
+```
+
+## How.did.you.know.about.PPHM.
+```{r catHow.did.you.know.about.PPHM.}
+df_mod %>% select(How.did.you.know.about.PPHM.) %>% group_by(How.did.you.know.about.PPHM.) %>% summarise(n = n())
+```
+
+## Basophils
+```{r catBasophils}
+df_mod %>% select(Basophils) %>% group_by(Basophils) %>% summarise(n = n())
+```
+
+## Blood.Group
+```{r catBlood.Group}
+df_mod %>% select(Blood.Group) %>% group_by(Blood.Group) %>% summarise(n = n())
+```
+
+
+
+# Scatter Plots
+
+```{r scatter1}
+
+pairs(~BMI+Potassium+Direct.Bilirubin, data= df_mod)
+
+```
+
+
+```{r scatter1}
+
+pairs(~BMI+Potassium+Direct.Bilirubin+Creatinine...Serum+Hemoglobin, data= df_mod)
+
+```
