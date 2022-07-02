@@ -48,7 +48,7 @@ ui <- fluidPage(
                         max = 100,
                         step = 1,
                         value = c(10, 80)),
-            sliderInput("AgeGroup.Input",
+            sliderInput("ageGroup.Input",
                         "Age Group:",
                         min = 0,
                         max = 110,
@@ -117,9 +117,8 @@ server <- function(input, output) {
   # output$vitD <- renderPlot({
   #
   output$vitD <- renderPlot({
-      df_bmi <- df_albumin %>% filter(BMI.Group >= input$bmiInput[1] & 
-                                      BMI.Group <= input$bmiInput[2] & 
-                                      Vit.D.assay < input$vitD.Input & 
+      df_bmi <- df_albumin %>% filter(BMI.Group >= input$bmiInput[1] &  BMI.Group <= input$bmiInput[2] & 
+                                      Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] & 
                                       Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
         
         output$datatable <-  renderDT(df_bmi,  options = list(lenghtChange = FALSE))
@@ -164,7 +163,7 @@ server <- function(input, output) {
                                           Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
       
         
-        figVitB12 <- df_B12 %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(col=factor(BMI.Group))) + xlim(0,6) + 
+        figVitB12 <- df_B12 %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(shape=factor(BMI.Group), col=factor(Age.Group) )) + xlim(0,6) + 
           geom_hline(yintercept = 50.0, linetype = 'dotted', col = 'red')  + annotate("text", x = 0, y = 50.0, label = "B12 50", vjust=-0.5) +
           geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotate("text", x = 3.5, y = 1000.0, label = "Albumin 3.5", hjust=0.5) 
         figVitB12
@@ -174,16 +173,15 @@ server <- function(input, output) {
   # output$vitB12Age <- renderPlot({
   #
   output$vitB12Age <- renderPlot({
-    df_bmi <- df_albumin %>% filter(BMI.Group >= input$bmiInput[1] & 
-                                        BMI.Group <= input$bmiInput[2] & 
-                                        Vit.D.assay < input$vitD.Input & 
-                                        Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
+    df_b12Age <- df_albumin %>% filter( Age.Group >= input$ageGroup.Input[1] & Age.Group <= input$ageGroup.Input[2] & 
+                                      Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2] &  
+                                      Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
       
-    output$datatable <-  renderDT(df_bmi,  options = list(lenghtChange = FALSE))
+    output$datatable <- renderDT(df_b12Age, options = list(lenghtChange = FALSE))
       
-    fig <- df_bmi %>% ggplot(aes(x=Albumin...Serum, y = Vit.D.assay)) + geom_point(aes(col=factor(BMI.Group))) + xlim(0,6) + ylim(0,100) +
-        geom_hline(yintercept = 3.0, linetype = 'dotted', col = 'red')  + annotate("text", x = 0, y = 3.0, label = "Vit.D 3", vjust=-0.5) +
-        geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotate("text", x = 3.5, y = 100.0, label = "Albumin 3.5", hjust=0.5) 
+    fig <- df_b12Age %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(col=factor(Age.Group))) + xlim(0,6) + ylim(0,1500) +
+      geom_hline(yintercept = 50.0, linetype = 'dotted', col = 'red')  + annotate("text", x = 0, y = 50.0, label = "Vit.B12 50", vjust=-0.5) +
+      geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotate("text", x = 3.5, y = 100.0, label = "Albumin 3.5", hjust=0.5) 
     fig
   })
     
