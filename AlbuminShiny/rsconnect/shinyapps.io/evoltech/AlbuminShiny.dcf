@@ -1,0 +1,13 @@
+name: AlbuminShiny
+title: AlbuminShiny
+username:
+account: evoltech
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6580784
+bundleId: 6062179
+url: https://evoltech.shinyapps.io/AlbuminShiny/
+when: 1656704074.95183
+lastSyncTime: 1656704074.95186
+asMultiple: FALSE
+asStatic: FALSE
