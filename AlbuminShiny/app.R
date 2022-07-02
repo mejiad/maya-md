@@ -207,6 +207,19 @@ server <- function(input, output) {
                                           Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
       output$datatable <-  renderDT(df_B12,  options = list(lenghtChange = FALSE))
   })
+  
+  #
+  # observeEvent(input$albumin.Input, {
+  #
+  observeEvent(input$albumin.Input, {
+        df_albumin_table <- df_albumin %>% filter(BMI.Group >= input$bmiInput[1] & 
+                                          BMI.Group <= input$bmiInput[2] & 
+                                          Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2] &
+                                          Vit.D.assay >= input$vitD.Input[1] & Vit.D.assay <= input$vitD.Input[2] &
+                                          Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2])  
+        
+      output$datatable <-  renderDT(df_albumin_table, options = list(lenghtChange = FALSE))
+  })
     
   #
   # output$datatable <-  renderDT(df_B12,  options = list(lenghtChange = FALSE))
