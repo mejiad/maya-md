@@ -71,6 +71,10 @@ ui <- fluidPage(
                     max = 60, 
                     step = 10,
                     value = c(10,30))
+        ),
+        conditionalPanel(
+          condition = "input.tabs == 'Cluster'",
+        downloadButton("downloadData", "Download the data")
         )
         ),
 
@@ -88,7 +92,7 @@ ui <- fluidPage(
             )),
             tabPanel("Cluster", fluidRow( 
              column(12, plotlyOutput("cluster")),
-             column(12, "Cluster Data", DTOutput("clusterTable")),
+             column(12, "Cluster Data", DTOutput("clusterTable"))
             )
           )
         )
@@ -177,20 +181,25 @@ server <- function(input, output) {
       numClusters <- as.numeric(input$clusters.Input)
       
       set.seed(240) # Setting seed
-      albumin_kmean <- albumin_kmean %>% filter(Albumin...Serum >= input$albumin.Input[1] &  Albumin...Serum <= input$albumin.Input[2] &
-                                          Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] &  
-                                                  Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2])
+      albumin_kmean_data <- df_mod %>% filter(Albumin...Serum >= input$albumin.Input[1] &  Albumin...Serum <= input$albumin.Input[2] &
+                Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] &  
+                Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2] ) %>%
+      select(Albumin...Serum, Vit.D.assay, Vitamin.B12..Serum)
       
-      kmeans.re <- kmeans(albumin_kmean, centers = numClusters, nstart = 3)
+      kmeans.re <- kmeans(albumin_kmean_data, centers = numClusters, nstart = 3)
       kmeans.re
-      albumin_axis <- albumin_kmean$Albumin...Serum
-      vitaminD_axis <- albumin_kmean$Vit.D.assay
-      vitaminB12_axis <- albumin_kmean$Vitamin.B12..Serum
-      
-      output$clusterTable <- renderDT(clusterData(), options = list(lenghtChange = FALSE))
+      albumin_axis <- albumin_kmean_data$Albumin...Serum
+      vitaminD_axis <- albumin_kmean_data$Vit.D.assay
+      vitaminB12_axis <- albumin_kmean_data$Vitamin.B12..Serum
   
       color <- kmeans.re$cluster
-  
+      df_cvs <- albumin_kmean_data
+      df_cvs$cluster <- color
+      
+      data <- clusterData()
+      data$cluster <- color
+      output$clusterTable <- renderDT( data, options = list(lenghtChange = FALSE))
+      
       cluster_plot <- plot_ly(x=albumin_axis, y=vitaminB12_axis, z=vitaminD_axis, type="scatter3d", mode="markers", color=factor(color), size = 2 )
       cluster_plot <- cluster_plot %>% layout(autosize = T, width=600, height=400, scene = list(xaxis = list(title="Albumin"), yaxis=list(title="Vitamin B12"), zaxis=list(title="Vitamin D")) )
       cluster_plot
@@ -198,9 +207,10 @@ server <- function(input, output) {
     
   dataD <- reactive({ df_albumin %>%  
       filter( Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2] &  
-                BMI.Group >= input$bmiInput[1] &  BMI.Group <= input$bmiInput[2] &  
                 Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] &  
-                Age.Group >= input$Age.Group[1] & Age.Group <= input$Age.Group[2]) %>%   
+                BMI.Group >= input$bmiInput[1] &  BMI.Group <= input$bmiInput[2] &  
+                Age.Group >= input$Age.Group[1] & Age.Group <= input$Age.Group[2]
+              )  %>%   
       select(Gender,  
              Village, 
              Block, 
@@ -241,7 +251,7 @@ server <- function(input, output) {
           Age.Group >= input$Age.Group[1] & Age.Group <= input$Age.Group[2] 
    )  
       
-   # output$b12Table <- renderDT(df_B12, options = list(lenghtChange = FALSE))
+   # output$b12Table <- renderDT(df_B12, options = list(lenghtChange = FALSE)a)
    output$b12Table <- renderDT(dataB12(), options = list(lenghtChange = FALSE))
    
   figVitB12 <- dataB12() %>% ggplot(aes(x=Albumin...Serum, y = Vitamin.B12..Serum)) + geom_point(aes(shape=factor(BMI.Group), col=factor(Age.Group) )) + xlim(0,6) + 
@@ -249,7 +259,48 @@ server <- function(input, output) {
           geom_vline(xintercept = 3.5, linetype = 'dotted', col = 'blue') + annotate("text", x = 3.5, y = 1000.0, label = "Albumin 3.5", hjust=0.5) 
   figVitB12
   })
-}    
+  
+  
+  clusterdata <- reactive({
+      cluster_data <- df_mod %>% filter(Albumin...Serum >= input$albumin.Input[1] & Albumin...Serum <= input$albumin.Input[2] & 
+                Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2] & 
+                Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] ) %>% 
+      select(Gender,
+             Village,   
+             Block,   
+             District,   
+             BMI,   
+             Vit.D.assay,   
+             Vitamin.B12..Serum,   
+             Albumin...Serum,   
+             Age.Group,   
+             BMI.Group
+      )
+      print("calculando")
+    
+      albumin_kmean_data <- albumin_kmean %>% filter(Albumin...Serum >= input$albumin.Input[1] &  Albumin...Serum <= input$albumin.Input[2] &
+                                          Vit.D.assay >= input$vitD.Input[1] &  Vit.D.assay <= input$vitD.Input[2] &  
+                                                  Vitamin.B12..Serum >= input$vitB12.Input[1] & Vitamin.B12..Serum <= input$vitB12.Input[2])
+      
+      kmeans.re <- kmeans(albumin_kmean_data, centers = input$clusters.Input, nstart = 3)
+      cluster_idx <- kmeans.re$cluster
+      cluster_data$cluster <- cluster_idx
+      cluster_data
+  })
+  
+  output$downloadData <- downloadHandler(
+    filename = function(){
+      paste("Cluster-", Sys.Date(), ".csv", sep="")
+      },
+    content = function(file){
+      data <- clusterdata()
+      print("data 1")
+      print(data)
+      print("data 1")
+      write.csv(data, file)
+    }
+  )
+}
 
 # Run the application 
 shinyApp(ui = ui, server = server)

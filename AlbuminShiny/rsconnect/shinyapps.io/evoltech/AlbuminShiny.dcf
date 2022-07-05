@@ -5,9 +5,9 @@ account: evoltech
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6580784
-bundleId: 6069689
+bundleId: 6071738
 url: https://evoltech.shinyapps.io/AlbuminShiny/
-when: 1656992334.19811
-lastSyncTime: 1656992334.19812
+when: 1657041061.24127
+lastSyncTime: 1657041061.2413
 asMultiple: FALSE
 asStatic: FALSE
